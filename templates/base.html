@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>{% block title %}Monitor de Consumo Energético{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <a class="skip" href="#contenido">Saltar al contenido</a>
+  <header>
+    <h1>Monitor de Consumo Energético</h1>
+    <nav aria-label="Principal">
+      <a href="{{ url_for('index') }}">Inicio</a>
+      <a href="{{ url_for('acerca') }}">Acerca y privacidad</a>
+    </nav>
+  </header>
+  <main id="contenido">
+    {% with msgs = get_flashed_messages(with_categories=true) %}
+      {% for cat, msg in msgs %}
+        <p class="aviso {{ cat }}" role="status">{{ msg }}</p>
+      {% endfor %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+  <footer>
+    <p>Sin cookies de seguimiento, sin anuncios y sin recursos externos.
+       Tus datos se quedan en este servidor.</p>
+  </footer>
+</body>
+</html>

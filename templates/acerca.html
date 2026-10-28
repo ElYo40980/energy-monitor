@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Acerca y privacidad · Monitor de Consumo Energético{% endblock %}
+{% block content %}
+<h2>Cómo calculamos</h2>
+<p>Emisiones = consumo × factor de emisión. Los factores son referenciales y
+   configurables; verifica el valor vigente publicado por la autoridad
+   competente si necesitas cifras oficiales.</p>
+<table>
+  <caption>Factores de emisión usados</caption>
+  <thead><tr><th scope="col">Tipo</th><th scope="col">Factor</th></tr></thead>
+  <tbody>
+  {% for k, f in factors.items() %}
+    <tr><th scope="row">{{ labels[k] }}</th><td>{{ f }} kg CO₂e / {{ units[k] }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<h2>Privacidad y datos</h2>
+<ul>
+  <li>No hay cuentas, rastreadores, analítica ni anuncios.</li>
+  <li>Solo guardamos periodo, tipo y cantidad de consumo.</li>
+  <li>Puedes descargar o eliminar todos tus datos en cualquier momento.</li>
+  <li>Las recomendaciones usan reglas simples y explicables, sin enviar datos a terceros.</li>
+</ul>
+
+<h2>Accesibilidad</h2>
+<p>Navegación por teclado, etiquetas en formularios, contraste suficiente,
+   modo oscuro automático y respeto a la preferencia de movimiento reducido.</p>
+{% endblock %}

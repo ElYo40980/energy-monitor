@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block content %}
+<section aria-labelledby="h-reg">
+  <h2 id="h-reg">Registrar consumo</h2>
+  <form method="post" action="{{ url_for('registrar') }}">
+    <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+    <div class="campo">
+      <label for="periodo">Periodo (AAAA-MM)</label>
+      <input id="periodo" name="periodo" type="month" value="{{ today }}" required>
+    </div>
+    <div class="campo">
+      <label for="tipo">Tipo de consumo</label>
+      <select id="tipo" name="tipo" required>
+        {% for k, name in labels.items() %}
+          <option value="{{ k }}">{{ name }} ({{ units[k] }})</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="campo">
+      <label for="cantidad">Cantidad</label>
+      <input id="cantidad" name="cantidad" type="number" min="0" step="any"
+             inputmode="decimal" required aria-describedby="ayuda-cant">
+      <small id="ayuda-cant">Búscala en tu recibo o medidor.</small>
+    </div>
+    <button type="submit">Guardar lectura</button>
+  </form>
+</section>
+
+<section aria-labelledby="h-res">
+  <h2 id="h-res">Resumen</h2>
+  {% if s.months %}
+    <p>Emisiones estimadas acumuladas (últimos meses):
+       <strong>{{ s.total_co2e }} kg CO₂e</strong></p>
+    <table>
+      <caption>Emisiones por mes (kg CO₂e)</caption>
+      <thead>
+        <tr><th scope="col">Mes</th><th scope="col">Detalle</th>
+            <th scope="col">kg CO₂e</th><th scope="col">Proporción</th></tr>
+      </thead>
+      <tbody>
+      {% for periodo, m in s.months %}
+        <tr>
+          <th scope="row">{{ periodo }}</th>
+          <td>
+            {% for k, v in m.kinds.items() %}
+              {{ labels[k] }}: {{ '%.1f'|format(v.cantidad) }} {{ units[k] }}{% if not loop.last %}<br>{% endif %}
+            {% endfor %}
+          </td>
+          <td>{{ '%.1f'|format(m.co2e) }}</td>
+          <td><meter min="0" max="{{ s.peak }}" value="{{ m.co2e }}"
+                     aria-label="Emisiones de {{ periodo }}">{{ '%.1f'|format(m.co2e) }}</meter></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <h3>Variación frente al mes anterior</h3>
+    <ul>
+      {% for k, name in labels.items() %}
+        <li>{{ name }}:
+          {% if s.change[k] is none %}sin datos para comparar
+          {% else %}{{ '%+.1f'|format(s.change[k]) }}%{% endif %}</li>
+      {% endfor %}
+    </ul>
+    <h3>Recomendaciones</h3>
+    <ul>{% for t in s.tips %}<li>{{ t }}</li>{% endfor %}</ul>
+  {% else %}
+    <p>Aún no hay lecturas. Registra tu primer consumo para ver el resumen.</p>
+  {% endif %}
+</section>
+
+<section aria-labelledby="h-dat">
+  <h2 id="h-dat">Tus datos</h2>
+  <p><a href="{{ url_for('exportar') }}">Descargar mis datos (CSV)</a></p>
+  <form method="post" action="{{ url_for('borrar') }}">
+    <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+    <button type="submit" class="peligro">Eliminar todos mis datos</button>
+  </form>
+</section>
+{% endblock %}
